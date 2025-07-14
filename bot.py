@@ -10,24 +10,23 @@ from datetime import datetime, timedelta
 
 logging.basicConfig(level=logging.INFO)
 
-# Храним историю диалога для каждого пользователя
+# Зберігаємо історію діалогу для кожного користувача
 user_histories = {}
 
-# Пример FAQ для prompt (можно расширять)
+# FAQ для prompt (можна розширювати)
 FAQ = (
-    "Q: С какого возраста можно делать лазерную эпиляцию?\n"
-    "A: Обычно с 18 лет, но иногда с 16 с разрешения родителей.\n"
-    "Q: Это больно?\n"
-    "A: Современные аппараты делают процедуру максимально комфортной.\n"
-    "Q: Почему так дорого?\n"
-    "A: Это инвестиция в ваше удобство и здоровье, результат держится долго."
+    "Q: З якого віку можна робити лазерну епіляцію?\n"
+    "A: Зазвичай з 18 років, але іноді з 16 за згодою батьків.\n"
+    "Q: Це боляче?\n"
+    "A: Сучасне обладнання робить процедуру максимально комфортною.\n"
+    "Q: Чому це дорого?\n"
+    "A: Це інвестиція у ваш комфорт і здоров'я, результат тримається довго."
 )
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "Здравствуйте! Я — AI-менеджер клиники лазерной эпиляции. "
-        "Чем могу помочь?"
+        "Вітаю! Я — AI-менеджер клініки лазерної епіляції. Чим можу допомогти?"
     )
 
 
@@ -35,19 +34,19 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
     text = update.message.text
     history = user_histories.get(user_id, [])
-    # Добавляем сообщение пользователя в историю
+    # Додаємо повідомлення користувача в історію
     history.append({"role": "user", "content": text})
-    # Добавляем FAQ в начало истории для контекста
+    # Додаємо FAQ на початок історії для контексту
     messages = [{"role": "system", "content": FAQ}] + history[-10:]
     reply = generate_reply(messages)
-    # Добавляем ответ бота в историю
+    # Додаємо відповідь бота в історію
     history.append({"role": "assistant", "content": reply})
     user_histories[user_id] = history[-20:]
     await update.message.reply_text(reply)
-    # Если пользователь хочет записаться, предлагаем слоты
+    # Якщо користувач хоче записатися — пропонуємо слоти
     if any(
         word in text.lower()
-        for word in ["записаться", "хочу на процедуру", "можно записаться"]
+        for word in ["записатися", "записатись", "хочу на процедуру", "можна записатися"]
     ):
         await suggest_slots(update, context)
 
@@ -62,7 +61,7 @@ async def suggest_slots(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     if not slots:
         await update.message.reply_text(
-            "Извините, нет свободных слотов на ближайшую неделю."
+            "Вибачте, немає вільних слотів на найближчий тиждень."
         )
         return
     slot_texts = [
@@ -71,7 +70,7 @@ async def suggest_slots(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
     keyboard = [[s] for s in slot_texts]
     await update.message.reply_text(
-        "Выберите удобное время:",
+        "Оберіть зручний час:",
         reply_markup=ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
     )
     context.user_data['pending_slots'] = slots[:5]
@@ -89,23 +88,22 @@ async def handle_slot_selection(update: Update, context: ContextTypes.DEFAULT_TY
             f"{slot[1].strftime('%H:%M')}"
         )
         if text == slot_str:
-            # Создаем запись
+            # Створюємо запис
             create_appointment(
                 specialist="laserepilation",
                 start_iso=slot[0].isoformat(),
                 end_iso=slot[1].isoformat(),
-                summary="Лазерная эпиляция",
-                description=f"Клиент: {update.message.from_user.full_name}"
+                summary="Лазерна епіляція",
+                description=f"Клієнт: {update.message.from_user.full_name}"
             )
             await update.message.reply_text(
-                f"Запись подтверждена ✅ Чекаємо вас "
+                f"Запис підтверджено ✅ Чекаємо вас "
                 f"{slot[0].strftime('%d.%m о %H:%M')}"
             )
             context.user_data['awaiting_slot'] = False
             return
     await update.message.reply_text(
-        "Пожалуйста, выберите время из "
-        "предложенных вариантов."
+        "Будь ласка, оберіть час із запропонованих варіантів."
     )
 
 
