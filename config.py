@@ -1,0 +1,7 @@
+TELEGRAM_TOKEN = "8095546920:AAHkGb_zs8T31w3mjyIaoqgRHuCTjjKtOpk"
+OPENAI_API_KEY = (
+    "sk-proj-MhlFDdKWBRP-lD0rA5MXTIt6D3uL4uhgVD8sZoNFJd_2f2PA4XrXzguSMXPXkdS95nopIiiTzNT3BlbkFJzQLieUUYLuiHANOo-"
+    "YvmdhDUoWmtQW0l2Vuux4DdWaQlnMlxhWE4Fs9A1OqY9JxSc4PG_QKcYA"
+)
+GOOGLE_CREDENTIALS_FILE = "credentials.json"
+CALENDAR_ID = "mr.nazak2005@gmail.com" 
